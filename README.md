@@ -14,7 +14,7 @@ sem2lab2/
 │   ├── validator.py 
 │   ├── task.py
 │   ├── exceptions.py 
-│   └── main.py                  # Демонстрация работы
+│   └── main.py 
 │
 ├── tests/
 │   ├── __init__.py
