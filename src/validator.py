@@ -38,23 +38,6 @@ class ValidatedDescriptor:
         if self.name in obj.__dict__:
             del obj.__dict__[self.name]
 
-def validate_task_id(value: str) -> str:
-    if not isinstance(value, str):
-        raise InvalidTaskIdError(f"ID задачи должен быть строкой, получен {type(value).__name__}")
-
-    if not value.strip():
-        raise InvalidTaskIdError("ID задачи не может быть пустым")
-
-    allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-')
-    if not all(c in allowed_chars for c in value):
-        raise InvalidTaskIdError(
-            f"ID задачи может содержать только буквы, цифры и дефисы. Получено: {value}"
-        )
-
-    if len(value) > 100:
-        raise InvalidTaskIdError(f"ID задачи не может быть длиннее 100 символов. Получено: {len(value)}")
-
-    return value.strip()
 
 def validate_description(value: str) -> str:
     if not isinstance(value, str):
@@ -70,7 +53,7 @@ def validate_description(value: str) -> str:
 
     return value.strip()
 
-def validate_priority(value: str) -> str:
+def validate_priority(value: int) -> int:
     if not isinstance(value, int):
         raise InvalidPriorityError(f"Приоритет должен быть целым числом, получен {type(value).__name__}")
 

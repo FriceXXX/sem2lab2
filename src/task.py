@@ -1,4 +1,7 @@
 from datetime import datetime
+from typing import Protocol, runtime_checkable, List, Dict, Any, Union
+from dataclasses import dataclass
+from uuid import uuid4
 from typing import Optional, Any
 from src.validator import (
     ValidatedDescriptor,
@@ -14,7 +17,6 @@ from src.exceptions import (
 )
 
 class Task:
-    id = ValidatedDescriptor('id', validate_task_id)
     description = ValidatedDescriptor('description', validate_description)
     priority = ValidatedDescriptor('priority', validate_priority, default=3)
     status = ValidatedDescriptor('status', validate_status, default='created')
@@ -24,11 +26,10 @@ class Task:
 
     def __init__(
             self,
-            task_id: str,
             description: str,
             priority: int = 3,
             status: str = 'created'):
-        self.id = task_id
+        self._id = str(uuid4())
         self.description = description
         self.priority = priority
         self.status = status
@@ -37,6 +38,14 @@ class Task:
         self._history: list[dict] = []
 
         self._log_change('created', None, status)
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @id.setter
+    def id(self, value: str):
+        raise AttributeError("ID is read-only")
 
     @property
     def created_at(self) -> datetime:
@@ -129,10 +138,25 @@ class Task:
     def get_history(self) -> list[dict]:
         return self._history.copy()
 
+    @classmethod
+    def create(cls, payload: Any) -> "Task":
+        return cls(task_id=str(uuid4()), description=payload)
+
     def _log_change(self, field: str, old_value: Any, new_value: Any) -> None:
         self._history.append({
             'timestamp': datetime.now(),
             'field': field,
+            'field': field,
             'old_value': old_value,
             'new_value': new_value
         })
+
+
+@runtime_checkable
+class TaskSource(Protocol):
+    def get_tasks(self) -> List[Task]:
+        """
+        Get all tasks
+        :return: List of Task
+        """
+        ...
